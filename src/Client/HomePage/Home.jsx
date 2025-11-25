@@ -1,9 +1,45 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./homepage.scss";
 import { FaChevronDown } from "react-icons/fa";
 import { homePagedata } from "../Data/HomeAndAboutPageData";
 
 const Home = React.memo(() => {
+  const [displayedText, setDisplayedText] = useState("");
+  const [showCursor, setShowCursor] = useState(true);
+  const fullText = homePagedata.description;
+  const cursorIntervalRef = useRef(null);
+
+  useEffect(() => {
+    let currentIndex = 0;
+    let timeoutId;
+
+    const typeText = () => {
+      if (currentIndex < fullText.length) {
+        setDisplayedText(fullText.substring(0, currentIndex + 1));
+        currentIndex++;
+        timeoutId = setTimeout(typeText, 100); // Typing speed: 100ms per character
+      } else {
+        // Blinking cursor effect after typing is complete
+        cursorIntervalRef.current = setInterval(() => {
+          setShowCursor((prev) => !prev);
+        }, 530);
+      }
+    };
+
+    // Start typing after a short delay
+    const startDelay = setTimeout(() => {
+      typeText();
+    }, 500);
+
+    return () => {
+      clearTimeout(startDelay);
+      clearTimeout(timeoutId);
+      if (cursorIntervalRef.current) {
+        clearInterval(cursorIntervalRef.current);
+      }
+    };
+  }, [fullText]);
+
   const handleScrollClick = (e) => {
     e.preventDefault();
     const aboutSection = document.getElementById("about");
@@ -19,8 +55,11 @@ const Home = React.memo(() => {
           <h1>
             <span>{homePagedata.name}</span>
           </h1>
-          <h2 data-aos="fade-up" data-aos-delay="100">
-            {homePagedata.description}
+          <h2 data-aos="fade-up" data-aos-delay="100" className="typing-text">
+            {displayedText}
+            <span className={`typing-cursor ${showCursor ? "visible" : ""}`}>
+              |
+            </span>
           </h2>
           <a
             href="#about"

@@ -6,7 +6,7 @@ import { BsCodeSlash } from "react-icons/bs";
 
 export const homePagedata = {
   name: "Nihal Parmar",
-  description: "I'm a Software Developer",
+  description: "Modern Engineering. Scalable Systems. Real Impact",
 };
 
 export const aboutPageData = {

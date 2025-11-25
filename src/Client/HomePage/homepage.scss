@@ -92,6 +92,38 @@
   font-weight: 500;
   letter-spacing: 1px;
   text-transform: uppercase;
+  min-height: 20px; // Prevent layout shift during typing
+}
+
+// Typing animation styles
+#hero h2.typing-text {
+  display: inline-block;
+  position: relative;
+}
+
+.typing-cursor {
+  display: inline-block;
+  margin-left: 2px;
+  color: #ffb727;
+  font-weight: 300;
+  animation: blink 1s infinite;
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+
+.typing-cursor.visible {
+  opacity: 1;
+}
+
+@keyframes blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
 }
 
 #hero .btn-scroll {
