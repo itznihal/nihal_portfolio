@@ -6,10 +6,13 @@ import { CgMail } from "react-icons/cg";
 import { AiOutlineShareAlt } from "react-icons/ai";
 import { BiPhoneCall } from "react-icons/bi";
 import { FaCheckCircle } from "react-icons/fa";
+import emailjs from "@emailjs/browser";
 
-const FIREBASE_URL =
-  process.env.REACT_APP_FIREBASE_DATABASE_URL ||
-  "https://nihalparmarportfolio-default-rtdb.firebaseio.com/reactcontactform.json";
+// EmailJS Configuration
+const EMAILJS_SERVICE_ID = process.env.REACT_APP_EMAILJS_SERVICE_ID || "";
+const EMAILJS_TEMPLATE_ID = process.env.REACT_APP_EMAILJS_TEMPLATE_ID || "";
+const EMAILJS_PUBLIC_KEY = process.env.REACT_APP_EMAILJS_PUBLIC_KEY || "";
+const RECIPIENT_EMAIL = "itznihal143@gmail.com";
 
 const MAX_MESSAGE_LENGTH = 2000;
 
@@ -28,7 +31,7 @@ const Contact = React.memo(() => {
     subject: false,
     message: false,
   });
-  
+
   const messageLength = user.message.length;
   const remainingChars = MAX_MESSAGE_LENGTH - messageLength;
 
@@ -57,26 +60,36 @@ const Contact = React.memo(() => {
       subject: touched.subject ? validateSubject(user.subject) : null,
       message: touched.message ? validateMessage(user.message) : null,
     };
-  }, [user, touched, validateName, validateEmail, validateSubject, validateMessage]);
+  }, [
+    user,
+    touched,
+    validateName,
+    validateEmail,
+    validateSubject,
+    validateMessage,
+  ]);
 
-  const getUserData = useCallback((e) => {
-    const { name, value } = e.target;
-    setUser((prev) => ({ ...prev, [name]: value }));
-    
-    // Mark field as touched when user starts typing
-    if (!touched[name]) {
-      setTouched((prev) => ({ ...prev, [name]: true }));
-    }
-    
-    // Clear status when user starts typing
-    if (status.type) {
-      setStatus({ type: null, message: "" });
-    }
-  }, [status.type, touched]);
+  const getUserData = useCallback(
+    (e) => {
+      const { name, value } = e.target;
+      setUser((prev) => ({ ...prev, [name]: value }));
+
+      // Mark field as touched when user starts typing
+      if (!touched[name]) {
+        setTouched((prev) => ({ ...prev, [name]: true }));
+      }
+
+      // Clear status when user starts typing
+      if (status.type) {
+        setStatus({ type: null, message: "" });
+      }
+    },
+    [status.type, touched]
+  );
 
   const validateForm = useCallback(() => {
     const { name, email, subject, message } = user;
-    
+
     if (!name.trim()) {
       setStatus({ type: "error", message: "Name is required" });
       return false;
@@ -111,32 +124,44 @@ const Contact = React.memo(() => {
         return;
       }
 
+      // Check if EmailJS is configured
+      if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
+        setStatus({
+          type: "error",
+          message:
+            "Email service is not configured. Please add EmailJS credentials to .env file.",
+        });
+        return;
+      }
+
       setIsLoading(true);
       setStatus({ type: null, message: "" });
 
       try {
         const { name, email, subject, message } = user;
-        const res = await fetch(FIREBASE_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: name.trim(),
-            email: email.trim(),
-            subject: subject.trim(),
-            message: message.trim(),
-            timestamp: new Date().toISOString(),
-          }),
-        });
 
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
+        // Initialize EmailJS with public key
+        emailjs.init(EMAILJS_PUBLIC_KEY);
 
-        const data = await res.json();
+        // Prepare email template parameters
+        const templateParams = {
+          to_email: RECIPIENT_EMAIL,
+          from_name: name.trim(),
+          from_email: email.trim(),
+          subject: subject.trim(), // Template already includes "Portfolio Contact: " prefix
+          message: message.trim(),
+          reply_to: email.trim(),
+          timestamp: new Date().toLocaleString(),
+        };
 
-        if (data) {
+        // Send email using EmailJS
+        const response = await emailjs.send(
+          EMAILJS_SERVICE_ID,
+          EMAILJS_TEMPLATE_ID,
+          templateParams
+        );
+
+        if (response.status === 200 || response.text === "OK") {
           setUser({
             name: "",
             email: "",
@@ -158,9 +183,26 @@ const Contact = React.memo(() => {
         }
       } catch (error) {
         console.error("Error sending message:", error);
+        let errorMessage = "Failed to send message. Please try again later.";
+
+        // Provide more specific error messages
+        if (error.text) {
+          if (error.text.includes("Service ID not found")) {
+            errorMessage =
+              "Email service not found. Please verify your Service ID in EmailJS dashboard.";
+          } else if (error.text.includes("Template ID not found")) {
+            errorMessage =
+              "Email template not found. Please verify your Template ID in EmailJS dashboard.";
+          } else {
+            errorMessage = `Error: ${error.text}`;
+          }
+        } else if (error.message) {
+          errorMessage = `Error: ${error.message}`;
+        }
+
         setStatus({
           type: "error",
-          message: "Failed to send message. Please try again later.",
+          message: errorMessage,
         });
       } finally {
         setIsLoading(false);
@@ -177,7 +219,11 @@ const Contact = React.memo(() => {
       <div className="container-fluid nav_bg prjtcls">
         <div className="row">
           <div className="col-10 mx-auto">
-            <section id="prjtcls" className="prjtcls" aria-label="Contact section">
+            <section
+              id="prjtcls"
+              className="prjtcls"
+              aria-label="Contact section"
+            >
               <div className="container">
                 <div className="section-title">
                   <span>{contactPageData.sectionTitleSpan}</span>
@@ -203,7 +249,10 @@ const Contact = React.memo(() => {
                       <div className="col-md-12">
                         <div className="info-box">
                           <div className="maincontactcls">
-                            <AiOutlineShareAlt className="githubicn" aria-hidden="true" />
+                            <AiOutlineShareAlt
+                              className="githubicn"
+                              aria-hidden="true"
+                            />
                             <h3>{contactPageData.socialProfile}</h3>
                           </div>
                           <div className="social-links" role="list">
@@ -232,7 +281,10 @@ const Contact = React.memo(() => {
                               className="githubicn"
                               aria-label={`Send email to ${email}`}
                             >
-                              <CgMail className="githubicn" aria-hidden="true" />
+                              <CgMail
+                                className="githubicn"
+                                aria-hidden="true"
+                              />
                             </a>
                             <h3>{contactPageData.emailMe}</h3>
                             <p>{email}</p>
@@ -247,7 +299,10 @@ const Contact = React.memo(() => {
                               className="githubicn"
                               aria-label={`Call ${phone}`}
                             >
-                              <BiPhoneCall className="githubicn" aria-hidden="true" />
+                              <BiPhoneCall
+                                className="githubicn"
+                                aria-hidden="true"
+                              />
                             </a>
                             <h3>{contactPageData.callMe}</h3>
                             <p>{phone}</p>
@@ -273,7 +328,11 @@ const Contact = React.memo(() => {
                               name="name"
                               className={`form-control ${
                                 fieldValidation.name === true ? "is-valid" : ""
-                              } ${fieldValidation.name === false ? "is-invalid" : ""}`}
+                              } ${
+                                fieldValidation.name === false
+                                  ? "is-invalid"
+                                  : ""
+                              }`}
                               id="name"
                               placeholder="Your Name"
                               value={user.name}
@@ -291,7 +350,10 @@ const Contact = React.memo(() => {
                                 aria-label="Name is valid"
                               />
                             )}
-                            <span id="name-validation" className="visually-hidden">
+                            <span
+                              id="name-validation"
+                              className="visually-hidden"
+                            >
                               {fieldValidation.name === true
                                 ? "Name is valid"
                                 : fieldValidation.name === false
@@ -309,7 +371,11 @@ const Contact = React.memo(() => {
                               type="email"
                               className={`form-control ${
                                 fieldValidation.email === true ? "is-valid" : ""
-                              } ${fieldValidation.email === false ? "is-invalid" : ""}`}
+                              } ${
+                                fieldValidation.email === false
+                                  ? "is-invalid"
+                                  : ""
+                              }`}
                               name="email"
                               id="email"
                               placeholder="Your Email"
@@ -328,7 +394,10 @@ const Contact = React.memo(() => {
                                 aria-label="Email is valid"
                               />
                             )}
-                            <span id="email-validation" className="visually-hidden">
+                            <span
+                              id="email-validation"
+                              className="visually-hidden"
+                            >
                               {fieldValidation.email === true
                                 ? "Email is valid"
                                 : fieldValidation.email === false
@@ -347,7 +416,11 @@ const Contact = React.memo(() => {
                             type="text"
                             className={`form-control ${
                               fieldValidation.subject === true ? "is-valid" : ""
-                            } ${fieldValidation.subject === false ? "is-invalid" : ""}`}
+                            } ${
+                              fieldValidation.subject === false
+                                ? "is-invalid"
+                                : ""
+                            }`}
                             name="subject"
                             id="subject"
                             placeholder="Subject"
@@ -366,7 +439,10 @@ const Contact = React.memo(() => {
                               aria-label="Subject is valid"
                             />
                           )}
-                          <span id="subject-validation" className="visually-hidden">
+                          <span
+                            id="subject-validation"
+                            className="visually-hidden"
+                          >
                             {fieldValidation.subject === true
                               ? "Subject is valid"
                               : fieldValidation.subject === false
@@ -383,7 +459,11 @@ const Contact = React.memo(() => {
                           <textarea
                             className={`form-control ${
                               fieldValidation.message === true ? "is-valid" : ""
-                            } ${fieldValidation.message === false ? "is-invalid" : ""}`}
+                            } ${
+                              fieldValidation.message === false
+                                ? "is-invalid"
+                                : ""
+                            }`}
                             name="message"
                             id="message"
                             rows="6"
@@ -404,7 +484,10 @@ const Contact = React.memo(() => {
                               aria-label="Message is valid"
                             />
                           )}
-                          <span id="message-validation" className="visually-hidden">
+                          <span
+                            id="message-validation"
+                            className="visually-hidden"
+                          >
                             {fieldValidation.message === true
                               ? "Message is valid"
                               : fieldValidation.message === false
