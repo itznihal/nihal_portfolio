@@ -14,23 +14,59 @@ const navItems = [
 const Navbar = React.memo(() => {
   const [activeSection, setActiveSection] = useState("hero");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const handleScroll = useCallback(() => {
-    const sections = navItems.map((item) => item.id);
-    const scrollPosition = window.scrollY + 100;
+    const scrollY = window.scrollY;
+    
+    // Update scrolled state for blur effect
+    setIsScrolled(scrollY > 50);
 
+    const sections = navItems.map((item) => item.id);
+    const scrollPosition = scrollY + 150; // Offset for better detection
+
+    // Special handling for hero section (at top)
+    if (scrollY < 100) {
+      setActiveSection("hero");
+      return;
+    }
+
+    // Check sections from bottom to top
     for (let i = sections.length - 1; i >= 0; i--) {
       const section = document.getElementById(sections[i]);
-      if (section && section.offsetTop <= scrollPosition) {
-        setActiveSection(sections[i]);
-        break;
+      if (section) {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.offsetHeight;
+        const sectionBottom = sectionTop + sectionHeight;
+
+        // Check if scroll position is within this section
+        if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+          setActiveSection(sections[i]);
+          break;
+        }
       }
     }
   }, []);
 
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    // Use requestAnimationFrame for smoother performance
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    handleScroll(); // Initial call to set active section
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+    };
   }, [handleScroll]);
 
   const handleNavClick = useCallback((e, href) => {
@@ -47,7 +83,9 @@ const Navbar = React.memo(() => {
     <div className="navcls container-fluid">
       <header
         id="header"
-        className="fixed-top d-flex justify-content-center align-items-center header-transparent"
+        className={`fixed-top d-flex justify-content-center align-items-center header-transparent ${
+          isScrolled ? "header-scrolled" : ""
+        }`}
         role="banner"
       >
         <nav
@@ -57,7 +95,7 @@ const Navbar = React.memo(() => {
         >
           <div className="container-fluid">
             <button
-              className="navbar-toggler mx-auto"
+              className={`navbar-toggler mx-auto ${isMenuOpen ? "active" : ""}`}
               type="button"
               data-bs-toggle="collapse"
               data-bs-target="#navbarSupportedContent"
@@ -66,7 +104,9 @@ const Navbar = React.memo(() => {
               aria-label="Toggle navigation"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
-              <span className="navbar-toggler-icon" aria-hidden="true"></span>
+              <span className="hamburger-box" aria-hidden="true">
+                <span className="hamburger-inner"></span>
+              </span>
             </button>
             <div
               className={`collapse navbar-collapse ${isMenuOpen ? "show" : ""}`}

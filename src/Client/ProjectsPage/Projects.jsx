@@ -11,16 +11,17 @@ import "swiper/css/a11y";
 
 const Projects = React.memo(() => {
   const projects = useMemo(() => projectPageData.project || [], []);
-  const githubBaseUrl = process.env.REACT_APP_GITHUB_USERNAME
-    ? `https://github.com/${process.env.REACT_APP_GITHUB_USERNAME}`
-    : "https://github.com/itznihal";
 
   return (
     <div id="projectss" className="projectpge">
       <div className="container-fluid nav_bg prjtcls">
         <div className="row">
           <div className="col-10 mx-auto">
-            <section id="prjtcls" className="prjtcls" aria-label="Projects section">
+            <section
+              id="prjtcls"
+              className="prjtcls"
+              aria-label="Projects section"
+            >
               <div className="container">
                 <div className="section-title">
                   <span>{projectPageData.sectionTitleSpan}</span>
@@ -94,11 +95,15 @@ const Projects = React.memo(() => {
                             aria-label={`${project.projectName} image carousel`}
                           >
                             {project.projectImages.map((image, imageIndex) => (
-                              <SwiperSlide key={`slide-${projectIndex}-${imageIndex}`}>
+                              <SwiperSlide
+                                key={`slide-${projectIndex}-${imageIndex}`}
+                              >
                                 <img
                                   className="img-fluid"
                                   src={image}
-                                  alt={`${project.projectName} screenshot ${imageIndex + 1}`}
+                                  alt={`${project.projectName} screenshot ${
+                                    imageIndex + 1
+                                  }`}
                                   loading="lazy"
                                 />
                               </SwiperSlide>
@@ -123,7 +128,10 @@ const Projects = React.memo(() => {
                               rel="noopener noreferrer"
                               aria-label={`View ${project.projectName} on GitHub`}
                             >
-                              <AiOutlineGithub className="githubicn" aria-hidden="true" />
+                              <AiOutlineGithub
+                                className="githubicn"
+                                aria-hidden="true"
+                              />
                             </a>
                           </p>
                         )}

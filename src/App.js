@@ -4,6 +4,7 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle";
+import { FaArrowUp } from "react-icons/fa";
 
 // Lazy load components for better performance
 const Navbar = React.lazy(() => import("./Client/NavbarPage/Navbar"));
@@ -37,6 +38,7 @@ const LoadingFallback = () => (
 
 function App() {
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [showBackToTop, setShowBackToTop] = useState(false);
 
   const handleScroll = useCallback(() => {
     const windowHeight = window.innerHeight;
@@ -46,6 +48,16 @@ function App() {
     const progress =
       scrollableHeight > 0 ? (scrollTop / scrollableHeight) * 100 : 0;
     setScrollProgress(Math.min(100, Math.max(0, progress)));
+
+    // Show back to top button after scrolling 300px
+    setShowBackToTop(scrollTop > 300);
+  }, []);
+
+  const scrollToTop = useCallback(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   }, []);
 
   useEffect(() => {
@@ -98,6 +110,18 @@ function App() {
         <Contact />
         <Footer />
       </Suspense>
+
+      {/* Back to Top Button */}
+      {showBackToTop && (
+        <button
+          className="back-to-top"
+          onClick={scrollToTop}
+          aria-label="Scroll to top"
+          title="Back to top"
+        >
+          <FaArrowUp aria-hidden="true" />
+        </button>
+      )}
     </div>
   );
 }
