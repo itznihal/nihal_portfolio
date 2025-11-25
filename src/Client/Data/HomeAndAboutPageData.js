@@ -31,26 +31,26 @@ export const aboutPageData = {
     {
       rating: "8+ ",
       heading: "Projects:",
-      icon: <FaLaptopCode class="bi bi-code-slash abtglogo" />,
+      icon: <FaLaptopCode className="bi bi-code-slash abtglogo" />,
       description: "Personal and group projects I have worked on.",
     },
     {
       rating: "12+",
       heading: "Awards & Certificates:",
-      icon: <BsAward class="bi bi-code-slash abtglogo" />,
+      icon: <BsAward className="bi bi-code-slash abtglogo" />,
       description:
         "Certificate or Award achived in projects, competetion, Quizes and Events",
     },
     {
       rating: "2",
       heading: "Trainee/Internships:",
-      icon: <MdWorkOutline class="bi bi-code-slash abtglogo" />,
+      icon: <MdWorkOutline className="bi bi-code-slash abtglogo" />,
       description: "Good hands on experince in Web technologies.",
     },
     {
       rating: "1544",
       heading: "@CodeChef",
-      icon: <BsCodeSlash class="bi bi-code-slash abtglogo" />,
+      icon: <BsCodeSlash className="bi bi-code-slash abtglogo" />,
       description: "Secure Decent Rating",
     },
   ],

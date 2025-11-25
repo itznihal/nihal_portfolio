@@ -1,53 +1,71 @@
+import React, { useEffect, Suspense } from "react";
 import "./App.css";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import { Switch, Route, Redirect } from "react-router-dom";
-import Home from "./Client/HomePage/Home";
-import About from "./Client/AboutPage/About";
-import Articles from "./Client/ArticlesPage/Articles";
-import Certifications from "./Client/CertificationsPage/Certifications";
-import Contact from "./Client/ContactPage/Contact";
-import Navbar from "./Client/NavbarPage/Navbar";
-import Projects from "./Client/ProjectsPage/Projects";
-import Sidebar from "./Client/SideBarPage/Sidebar";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle";
 
-import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
-import "../node_modules/bootstrap/dist/js/bootstrap.bundle";
+// Lazy load components for better performance
+const Navbar = React.lazy(() => import("./Client/NavbarPage/Navbar"));
+const Sidebar = React.lazy(() => import("./Client/SideBarPage/Sidebar"));
+const Home = React.lazy(() => import("./Client/HomePage/Home"));
+const About = React.lazy(() => import("./Client/AboutPage/About"));
+const Projects = React.lazy(() => import("./Client/ProjectsPage/Projects"));
+const Certifications = React.lazy(() =>
+  import("./Client/CertificationsPage/Certifications")
+);
+const Articles = React.lazy(() => import("./Client/ArticlesPage/Articles"));
+const Resume = React.lazy(() => import("./Client/ResumePage/Resume"));
+const Contact = React.lazy(() => import("./Client/ContactPage/Contact"));
+const Footer = React.lazy(() => import("./Client/FooterPage/Footer"));
 
-import "../node_modules/font-awesome/css/font-awesome.min.css";
-import "../node_modules/font-awesome/css/font-awesome.min.css";
-
-// NODE MODULE PATH
-import "../node_modules/font-awesome/css/font-awesome.min.css";
-import "../node_modules/font-awesome/css/font-awesome.css";
-import "@fortawesome/fontawesome-free/css/all.min.css";
-import Resume from "./Client/ResumePage/Resume";
-import Footer from "./Client/FooterPage/Footer";
-
-// ANIMATED SCROLL LIBERARY
-AOS.init();
+// Loading fallback component
+const LoadingFallback = () => (
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      minHeight: "100vh",
+    }}
+  >
+    <div className="spinner-border text-primary" role="status">
+      <span className="visually-hidden">Loading...</span>
+    </div>
+  </div>
+);
 
 function App() {
-  return (
-    <>
-      {/* <h1>App.js</h1> */}
-      <Navbar />
-      <Sidebar />
-      <Home />
-      <About />
-      <Projects />
-      <Certifications />
-      <Articles />
-      <Resume />
-      <Contact />
-      <Footer />
+  useEffect(() => {
+    // Initialize AOS with optimized settings
+    AOS.init({
+      duration: 800,
+      easing: "ease-in-out",
+      once: true,
+      offset: 100,
+      disable: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    });
 
-      {/* <About/>
-    <Cocarricular/>
-    <Projects/>
-     */}
-    </>
+    // Refresh AOS on route changes (if needed in future)
+    AOS.refresh();
+  }, []);
+
+  return (
+    <div className="App">
+      <Suspense fallback={<LoadingFallback />}>
+        <Navbar />
+        <Sidebar />
+        <Home />
+        <About />
+        <Projects />
+        <Certifications />
+        <Articles />
+        <Resume />
+        <Contact />
+        <Footer />
+      </Suspense>
+    </div>
   );
 }
 
-export default App;
+export default React.memo(App);
