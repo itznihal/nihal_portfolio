@@ -9,22 +9,49 @@
 #hero {
   width: 100%;
   height: 100vh;
-  background: url("../Images/nihal_hero_img.jpeg") top right;
+  min-height: 100vh;
+  background: url("../Images/nihal_hero_img.jpeg") center center;
   background-size: cover;
-  // background-position: center center;
-  // background-attachment: fixed; /*only if you want*/
+  background-repeat: no-repeat;
+  background-position: center center;
   position: relative;
+  overflow: hidden;
 }
 
+// Ensure image shows fully on all screen sizes
 @media only screen and (max-width: 991px) {
   #hero {
     width: 100%;
     height: 100vh;
-    background: url("../Images/nihal_hero_img.jpeg") top right;
+    min-height: 100vh;
+    background: url("../Images/nihal_hero_img.jpeg") center center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: scroll; // Changed from fixed for better mobile performance
+    position: relative;
+  }
+}
+
+// For very small screens, ensure proper scaling
+@media only screen and (max-width: 575px) {
+  #hero {
     background-size: cover;
     background-position: center center;
-    background-attachment: fixed; /*only if you want*/
-    position: relative;
+    // Ensure full viewport height on mobile
+    height: 100vh;
+    min-height: 100vh;
+    max-height: 100vh;
+  }
+}
+
+// For landscape mobile devices
+@media only screen and (max-width: 991px) and (orientation: landscape) {
+  #hero {
+    background-size: cover;
+    background-position: center center;
+    height: 100vh;
+    min-height: 100vh;
   }
 }
 
