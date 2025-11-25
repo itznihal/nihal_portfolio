@@ -229,7 +229,7 @@ portfolio-nihal-2025/
   - LeetCode (https://leetcode.com/nihalparmar/)
   - LinkedIn (https://www.linkedin.com/in/nihal-parmar-2924411b7/)
   - Medium (https://itznihal.medium.com/)
-  - Instagram (https://www.instagram.com/itz_____nihal/)
+  - Instagram (https://www.instagram.com/nihalparmar_22?igsh=ZHl1a2dpbTlhMTVs&utm_source=qr)
 
 **Icons Used**: React Icons (BsInstagram, AiFillGithub, RiFacebookCircleFill, GrLinkedin, AiOutlineMedium, BiCodeAlt)
 
@@ -502,7 +502,7 @@ Component/
 - **LinkedIn**: https://www.linkedin.com/in/nihal-parmar-2924411b7/
 - **Medium**: https://itznihal.medium.com/
 - **LeetCode**: https://leetcode.com/nihalparmar/
-- **Instagram**: https://www.instagram.com/itz_____nihal/
+- **Instagram**: https://www.instagram.com/nihalparmar_22?igsh=ZHl1a2dpbTlhMTVs&utm_source=qr
 - **Resume**: Google Drive PDF link
 
 ### Unused Dependencies

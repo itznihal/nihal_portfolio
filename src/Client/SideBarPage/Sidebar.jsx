@@ -33,7 +33,7 @@ const socialLinks = [
   },
   {
     id: "instagram",
-    href: "https://www.instagram.com/itz_____nihal/",
+    href: "https://www.instagram.com/nihalparmar_22?igsh=ZHl1a2dpbTlhMTVs&utm_source=qr",
     icon: BsInstagram,
     label: "Visit Instagram profile",
   },

@@ -37,7 +37,7 @@ export const contactPageData = {
       logo: <SiLeetcode className="githubicn" />,
     },
     {
-      link: "https://www.instagram.com/itz_____nihal/",
+      link: "https://www.instagram.com/nihalparmar_22?igsh=ZHl1a2dpbTlhMTVs&utm_source=qr",
       logo: <AiFillInstagram className="githubicn" />,
     },
   ],
