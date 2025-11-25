@@ -1,22 +1,51 @@
-*{
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  
 }
 /* Hide scrollbar in Chrome, Safari and Opera */
 body::-webkit-scrollbar {
-  display:none;
+  display: none;
 }
 
 /* Hide scrollbar for IE, Edge and Firefox */
 body {
- -ms-overflow-style: none; /* IE and EDGE */;
+  -ms-overflow-style: none; /* IE and EDGE */
   scrollbar-width: none; /* Firefox */
- overflow-x: hidden;
-  
+  overflow-x: hidden;
 }
 
-.srvccls h2{
+.srvccls h2 {
   text-align: justify;
+}
+
+/*--------------------------------------------------------------
+# Scroll Progress Indicator
+--------------------------------------------------------------*/
+.scroll-progress-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background-color: rgba(0, 0, 0, 0.1);
+  z-index: 9999;
+  transition: opacity 0.3s ease;
+}
+
+.scroll-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #ffb727 0%, #ff9500 100%);
+  transition: width 0.1s ease-out;
+  box-shadow: 0 0 10px rgba(255, 183, 39, 0.5);
+}
+
+/* Hide progress bar when at top */
+.scroll-progress-container[aria-valuenow="0"] {
+  opacity: 0;
+}
+
+/* Show progress bar when scrolling */
+.scroll-progress-container[aria-valuenow]:not([aria-valuenow="0"]) {
+  opacity: 1;
 }

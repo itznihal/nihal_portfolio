@@ -1,4 +1,4 @@
-import React, { useEffect, Suspense } from "react";
+import React, { useEffect, Suspense, useState, useCallback } from "react";
 import "./App.css";
 import AOS from "aos";
 import "aos/dist/aos.css";
@@ -36,6 +36,18 @@ const LoadingFallback = () => (
 );
 
 function App() {
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  const handleScroll = useCallback(() => {
+    const windowHeight = window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollableHeight = documentHeight - windowHeight;
+    const progress =
+      scrollableHeight > 0 ? (scrollTop / scrollableHeight) * 100 : 0;
+    setScrollProgress(Math.min(100, Math.max(0, progress)));
+  }, []);
+
   useEffect(() => {
     // Initialize AOS with optimized settings
     AOS.init({
@@ -48,10 +60,32 @@ function App() {
 
     // Refresh AOS on route changes (if needed in future)
     AOS.refresh();
-  }, []);
+
+    // Add scroll listener for progress indicator
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll(); // Initial calculation
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [handleScroll]);
 
   return (
     <div className="App">
+      {/* Scroll Progress Indicator */}
+      <div
+        className="scroll-progress-container"
+        role="progressbar"
+        aria-valuenow={scrollProgress}
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-label="Page scroll progress"
+      >
+        <div
+          className="scroll-progress-bar"
+          style={{ width: `${scrollProgress}%` }}
+        ></div>
+      </div>
       <Suspense fallback={<LoadingFallback />}>
         <Navbar />
         <Sidebar />
